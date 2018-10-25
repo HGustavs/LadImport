@@ -4,8 +4,9 @@
  	<script src="importcsv.js"></script> 
 </head>
 
-<body onload="importcsv();">
+<body>
 
+<div>
 <textarea id="thearea" style="width:400px;height:200px;">
 PNR,Moment1,Moment2,Moment3,Moment4,Moment5
 212112-4421,J,G,G,VG,G
@@ -16,7 +17,8 @@ PNR,Moment1,Moment2,Moment3,Moment4,Moment5
 124567-3567,J,U,-,-,G
 235795-3585,N,-,U,G,G
 </textarea>
-
+	<input type="button" value="Import" onclick="importcsv();">
+	</div>
 <table id="contenttable">
 <tr>
 	<th>PNR</th>

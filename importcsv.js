@@ -17,10 +17,10 @@ function importcsv()
 		var tabrows=[];
 		var tabheadings;
 		var students=[];
+		var results=[];
 	
 		if(controw.length>0){
 				contheadings=controw[0].split(",");
-				console.log(contheadings);
 				
 				// Swizzle data into an easily workable qualified array / object structure
 				for(var i=1;i<controw.length;i++){
@@ -31,6 +31,7 @@ function importcsv()
 						}
 						if(tmpobj['PNR']!=""){
 								tabrows[tmpobj['PNR']]=tmpobj;
+								results.push(tmpobj['PNR']);
 						}
 				}
 			
@@ -57,6 +58,7 @@ function importcsv()
 						if(compatibility==true){
 								// List of students that do not appear in imported data
 								var notappear="";
+								var studappear="";
 							
 								// Perform update for each table row			
 								for (var i = 1; i<table.rows.length; i++) {
@@ -98,11 +100,15 @@ function importcsv()
 												break;
 										}
 								}
-							
+								
+								// Do any students in result list not appear in students?
+								for(var i=0;i<results.length;i++){
+										if(students.indexOf(results[i])==-1) studappear+=results[i]+"\n"
+								}
+									
 								// We check if any students in student list do not appear in result list
-							
-								if(notappear==""){
-										alert("The following students did not appear in imported data:\n"+notappear);
+								if(notappear!=""||studappear!=""){
+										alert("The following students did not appear in imported data:\n"+notappear+"\nThe following students did not appear in the results table:\n"+studappear);
 								}
 						}else{
 								alert("Table is not compatible since following columns are missing:\n"+reason);
@@ -111,7 +117,6 @@ function importcsv()
 						alert("No applicable result rows to import data into!");
 				}
 				
-				console.log(tabrows);
 		}else{
 				alert("No applicable csv content yet!");
 		}
