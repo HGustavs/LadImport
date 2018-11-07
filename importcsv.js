@@ -4,13 +4,13 @@ Test Data csv compatible with our systems!
 
 Laborationsrapport 5,0 hp
 Personnummer,Namn,Betyg,Moment3,Moment4,Moment5
-19212112-4421,J,G,G,VG,G
-19560603-3434,N,VG,G,VG,G
-19503022-4566,N,VG,G,U,G
-19125874-4567,N,G,G,G,G
-19865324-3567,J,U,G,G,G
-20124567-3567,J,U,-,-,G
-19235795-3585,N,-,U,G,G
+19212112-4421,Greger Gregovic,G,J,G,G,VG,G
+19560603-3434,Sven Lundqvist,G,N,VG,G,VG,G
+19503022-4566,Conny Hill,VG,N,VG,G,U,G
+19125874-4567,Benny Dill,U,N,G,G,G,G
+19865324-3567,Lorf Gregovic,U,J,U,G,G,G
+20124567-3567,Ken Klum,G,J,U,-,-,G
+19235795-3585,Tommy Digman,VG,N,-,U,G,G
 
 */
 
@@ -25,6 +25,7 @@ Personnummer,Namn,Betyg,Moment3,Moment4,Moment5
 //-------------------------------------------------------------------------------------------------------------
 
 // Note: In order to comply with the GPL3 License you must publish any code based on this code using the GPL3 license. No exceptions.
+// Note: For Now, we strongly advise that you manually confirm that the results have been imported correctly
 
 function importcsv()
 {
@@ -45,9 +46,9 @@ function importcsv()
 						for(var j=0;j<tmprow.length;j++){
 							tmpobj[contheadings[j]]=tmprow[j];
 						}
-						if(tmpobj['PNR']!=""){
-								tabrows[tmpobj['PNR']]=tmpobj;
-								results.push(tmpobj['PNR']);
+						if(tmpobj['Personnummer']!=""){
+								tabrows[tmpobj['Personnummer']]=tmpobj;
+								results.push(tmpobj['Personnummer']);
 						}
 				}
 			
@@ -55,7 +56,6 @@ function importcsv()
 				var alltables=document.getElementsByClassName("resultatrapportering");
 				if(alltables.length>0){
 						var table = alltables[0];
-						console.log(table);
 						var headings=[];
 						if(table.rows.length>0){
 								
@@ -70,7 +70,7 @@ function importcsv()
 								var reason="";
 								for(var i=0;i<headings.length;i++){
 										if(headings[i].length<2||headings[i]=="Anonymiseringskod"||headings[i]=="Titel / Alternativ titel"||headings[i]=="Ex.datum"||headings[i]=="Status"||headings[i].indexOf("beslutshandling")!=-1||headings[i].indexOf("Skrivningspo")!=-1){
-												alert("Discarded: "+headings[i]);
+												// console.log("Discarded: "+headings[i]);
 										}else if(contheadings.indexOf(headings[i])==-1){
 												compatibility=false;
 												reason+="#"+headings[i]+"# ";
@@ -96,25 +96,31 @@ function importcsv()
 														if(typeof tabrows[pnr] === "undefined"){
 																notappear+=pnr+"\n";
 														}else{
-
 																// Process each cell accordingly, knowing that student does exist
 																for(var j=1;j<tabrow.cells.length;j++){
 																		var cell=tabrow.cells[j];
 																		colname=headings[j];
 																		colval=tabrows[pnr][colname];
+																	
+																		if(typeof colval !== "undefined"){
+																				console.log(colname,colval,cell);
 
-																		var inputs=cell.getElementsByTagName("input");
-																		var selects=cell.getElementsByTagName("select");
-																		if(inputs.length>0){
-																				for(var k=0;k<inputs.length;k++){
-																						inputs[k].value=colval;
+																				var inputs=cell.getElementsByTagName("input");
+																				var selects=cell.getElementsByTagName("select");
+																				if(inputs.length>0){
+																						for(var k=0;k<inputs.length;k++){
+																								inputs[k].value=colval;
+																						}
+																				}else if(selects.length>0){
+																						for(var k=0;k<selects.length;k++){
+																								selects[k].value=colval;
+																						}																
 																				}
-																		}else if(selects.length>0){
-																				for(var k=0;k<selects.length;k++){
-																						selects[k].value=colval;
-																				}																
+																				tabrow.style.backgroundColor="#def";
+
+																		}else{
+																				console.log("Ignoring: "+colname);
 																		}
-																		tabrow.style.backgroundColor="#def";
 																}
 
 														}
@@ -149,7 +155,7 @@ function importcsv()
 		}
 		
 }
-	
+
 function getup()
 {
 		document.body.innerHTML+="<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' value='Import' onclick='importcsv();'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>";
