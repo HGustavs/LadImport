@@ -27,6 +27,7 @@ Personnummer,Namn,Betyg,Moment3,Moment4,Moment5
 // Note: In order to comply with the GPL3 License you must publish any code based on this code using the GPL3 license. No exceptions.
 // Note: For Now, we strongly advise that you manually confirm that the results have been imported correctly
 
+
 function importcsv()
 {
 		var thecontent=document.getElementById("thearea").value;
@@ -35,33 +36,47 @@ function importcsv()
 		var tabheadings;
 		var students=[];
 		var results=[];
+		var examdate= new Date();
 	
+		examdate=new Date(controw[1]);
+		console.log(examdate);
+
 		if(controw.length>1){
-				contheadings=controw[1].split(",");
+				contheadings=controw[2].split(",");
 				
 				// Swizzle data into an easily workable qualified array / object structure
-				for(var i=1;i<controw.length;i++){
+				for(var i=3;i<controw.length;i++){
 						var tmprow=controw[i].split(",");
 						var tmpobj=[];
 						for(var j=0;j<tmprow.length;j++){
 							tmpobj[contheadings[j]]=tmprow[j];
 						}
+						tmpobj["Ex.datum"]=examdate;
 						if(tmpobj['Personnummer']!=""){
 								tabrows[tmpobj['Personnummer']]=tmpobj;
 								results.push(tmpobj['Personnummer']);
 						}
 				}
 			
-				// Retrieve on-screen table
+				// Retrieve on-screen table!
 				var alltables=document.getElementsByClassName("resultatrapportering");
 				if(alltables.length>0){
 						var table = alltables[0];
 						var headings=[];
+						headings.push("UNK");
 						if(table.rows.length>0){
-								
+
+								console.log(headings);
+							
 								// Iterate over cells and collect headings by number
 								for(var i=0;i<table.rows[0].cells.length;i++){
-										headings[i]=table.rows[0].cells[i].innerText.trim();
+										var heading=table.rows[0].cells[i].innerText.trim();
+												//if(heading.length<2||heading=="Anonymiseringskod"||heading=="Titel / Alternativ titel"||heading=="Ex.datum"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
+												if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
+														console.log("Discarding: ",heading);		
+												}else{
+														headings.push(heading);
+												}
 								}
 
 								// Iterate over all columns to check compatibility
@@ -76,6 +91,7 @@ function importcsv()
 												reason+="#"+headings[i]+"# ";
 										}
 								}
+								compatibility=true;
 
 								// If table is compatible then carry on
 								if(compatibility==true){
@@ -86,9 +102,14 @@ function importcsv()
 										// Perform update for each table row			
 										for (var i = 1; i<table.rows.length; i++) {
 												var tabrow=table.rows[i];
+												if(i==1){
+														
+														console.log(tabrow)
+												 }
 												// Check that number of columns corresponds to number of headings
 												// For now we assume 3 unused columns?
-												if(headings.length==tabrow.cells.length+3){
+												//if(headings.length+4==tabrow.cells.length){
+												if(1){
 														// Now we process each row / after trimming the excess characters
 														var pnr=tabrow.cells[1].innerText.trim();
 														students.push(pnr);
@@ -97,19 +118,31 @@ function importcsv()
 																notappear+=pnr+"\n";
 														}else{
 																// Process each cell accordingly, knowing that student does exist
+																var cnt=1;
 																for(var j=1;j<tabrow.cells.length;j++){
 																		var cell=tabrow.cells[j];
 																		colname=headings[j];
 																		colval=tabrows[pnr][colname];
-																	
-																		if(typeof colval !== "undefined"){
-																				console.log(colname,colval,cell);
 
+																		if(colname=="Betyg"&&colval=="VG") colval="number:101313";
+																		if(colname=="Betyg"&&colval=="G") colval="number:101314";
+																		if(colname=="Betyg"&&colval=="U") colval="number:101315";
+																		
+																		console.log(j,colname,colval);																	
+																	
+																	
+																		//console.log(cell.innerHTML)
+																		if(typeof colval !== "undefined"){																				
 																				var inputs=cell.getElementsByTagName("input");
 																				var selects=cell.getElementsByTagName("select");
+																					
 																				if(inputs.length>0){
-																						for(var k=0;k<inputs.length;k++){
-																								inputs[k].value=colval;
+																						for(var k=0;k<inputs.length;k++){																								
+																								if(colname=="Ex.datum"){
+																										inputs[k].value=examdate;
+																								}else{
+																										inputs[k].value=colval;
+																								}
 																						}
 																				}else if(selects.length>0){
 																						for(var k=0;k<selects.length;k++){
@@ -117,7 +150,6 @@ function importcsv()
 																						}																
 																				}
 																				tabrow.style.backgroundColor="#def";
-
 																		}else{
 																				console.log("Ignoring: "+colname);
 																		}
