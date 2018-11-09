@@ -71,21 +71,8 @@ function importcsv()
 							
 								// Iterate over cells and collect headings by number
 								for(var i=0;i<table.rows[0].cells.length;i++){
-                  /*
-										var heading=table.rows[0].cells[i].innerText.trim();
-												//if(heading.length<2||heading=="Anonymiseringskod"||heading=="Titel / Alternativ titel"||heading=="Ex.datum"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-												//if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-                        if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-														console.log("Discarding: ",heading);		
-												}else{
-														headings.push(heading);
-                        }
-                        */
                     var heading=table.rows[0].cells[i]
-                    //if(heading.length<2||heading=="Anonymiseringskod"||heading=="Titel / Alternativ titel"||heading=="Ex.datum"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-                    //if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-//                      if(heading.classList.contains("ng-hide")||heading.innerText.trim()==""){
-                        if(heading.innerText.trim()==""){
+                    if(heading.innerText.trim()==""){
                         console.log("Discarding: ",heading.innerText.trim());		
                     }else{
                         headings.push(heading.innerText.trim());
@@ -133,22 +120,20 @@ function importcsv()
                                 var cnt=1;
                                 var colcnt=0;
                                 var cell;
-																//for(var j=1;j<tabrow.cells.length;j++){
                                 for(var j=1;j<headings.length;j++){
                                     colname=headings[j];                                    
                                     colval=tabrows[pnr][colname];
 																		if(typeof colval !== "undefined"){		
                                         colcnt++;														
-                                        cell=tabrow.cells[colcnt];                                                                            
+                                        cell=tabrow.cells[colcnt];
+                                        
+                                        // If there are hidden cells in the tabrow we skip until we get a visable cell
                                         while(cell.classList.contains("ng-hide")){colcnt++;cell=tabrow.cells[colcnt];}
+
                                         if(colname=="Betyg"&&colval=="VG") colval="number:101313";
                                         if(colname=="Betyg"&&colval=="G") colval="number:101314";
                                         if(colname=="Betyg"&&colval=="U") colval="number:101315";
                                         
-                                        //console.log(j,colcnt,colname,colval);																	
-                                      
-                                      
-                                        //console.log(cell.innerHTML)
 																				var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
 																				if(inputs.length>0){
@@ -213,10 +198,7 @@ function importcsv()
 						}else{
 								alert("No applicable result rows to import data into!");
 						}
-
-					
-				}
-				
+				}				
 		}else{
 				alert("No applicable csv content yet!");
 		}
