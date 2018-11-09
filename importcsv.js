@@ -84,27 +84,29 @@ function importcsv()
                     var heading=table.rows[0].cells[i]
                     //if(heading.length<2||heading=="Anonymiseringskod"||heading=="Titel / Alternativ titel"||heading=="Ex.datum"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
                     //if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-                    if(heading.classList.contains("ng-hide")){
+//                      if(heading.classList.contains("ng-hide")||heading.innerText.trim()==""){
+                        if(heading.innerText.trim()==""){
                         console.log("Discarding: ",heading.innerText.trim());		
                     }else{
                         headings.push(heading.innerText.trim());
                     }
 
 								}
-								console.log("Snus",headings);
 
 								// Iterate over all columns to check compatibility
-								// For now, we skip over hidden columns e.g. "Anonymiseringskod" and "Titel"
+                // For now, we skip over hidden columns e.g. "Anonymiseringskod" and "Titel"
+                /*
 								var compatibility=true;
 								var reason="";
 								for(var i=0;i<headings.length;i++){
-										if(headings[i].length<2||headings[i]=="Anonymiseringskod"||headings[i]=="Titel / Alternativ titel"||headings[i]=="Ex.datum"||headings[i]=="Status"||headings[i].indexOf("beslutshandling")!=-1||headings[i].indexOf("Skrivningspo")!=-1){
+										if(headings[i].length<2||headings[i]=="Titel / Alternativ titel"||headings[i]=="Ex.datum"||headings[i]=="Status"||headings[i].indexOf("beslutshandling")!=-1||headings[i].indexOf("Skrivningspo")!=-1){
 												// console.log("Discarded: "+headings[i]);
 										}else if(contheadings.indexOf(headings[i])==-1){
 												compatibility=false;
 												reason+="#"+headings[i]+"# ";
 										}
-								}
+                }                
+                */
 								compatibility=true;
 
 								// If table is compatible then carry on
@@ -116,10 +118,6 @@ function importcsv()
 										// Perform update for each table row			
 										for (var i = 1; i<table.rows.length; i++) {
 												var tabrow=table.rows[i];
-												if(i==1){
-														
-														console.log(tabrow)
-												 }
 												// Check that number of columns corresponds to number of headings
 												// For now we assume 3 unused columns?
 												//if(headings.length+4==tabrow.cells.length){
@@ -132,43 +130,66 @@ function importcsv()
 																notappear+=pnr+"\n";
 														}else{
 																// Process each cell accordingly, knowing that student does exist
-																var cnt=1;
-																for(var j=1;j<tabrow.cells.length;j++){
-																		var cell=tabrow.cells[j];
-																		colname=headings[j];
-																		colval=tabrows[pnr][colname];
-
-																		if(colname=="Betyg"&&colval=="VG") colval="number:101313";
-																		if(colname=="Betyg"&&colval=="G") colval="number:101314";
-																		if(colname=="Betyg"&&colval=="U") colval="number:101315";
-																		
-																		console.log(j,colname,colval);																	
-																	
-																	
-																		//console.log(cell.innerHTML)
-																		if(typeof colval !== "undefined"){																				
+                                var cnt=1;
+                                var colcnt=0;
+                                var cell;
+																//for(var j=1;j<tabrow.cells.length;j++){
+                                for(var j=1;j<headings.length;j++){
+                                    colname=headings[j];                                    
+                                    colval=tabrows[pnr][colname];
+																		if(typeof colval !== "undefined"){		
+                                        colcnt++;														
+                                        cell=tabrow.cells[colcnt];                                                                            
+                                        while(cell.classList.contains("ng-hide")){colcnt++;cell=tabrow.cells[colcnt];}
+                                        if(colname=="Betyg"&&colval=="VG") colval="number:101313";
+                                        if(colname=="Betyg"&&colval=="G") colval="number:101314";
+                                        if(colname=="Betyg"&&colval=="U") colval="number:101315";
+                                        
+                                        //console.log(j,colcnt,colname,colval);																	
+                                      
+                                      
+                                        //console.log(cell.innerHTML)
 																				var inputs=cell.getElementsByTagName("input");
-																				var selects=cell.getElementsByTagName("select");
-																					
+                                        var selects=cell.getElementsByTagName("select");
 																				if(inputs.length>0){
 																						for(var k=0;k<inputs.length;k++){																								
 																								if(colname=="Ex.datum"){
 																										inputs[k].value=examdate;
 																								}else{
-																										inputs[k].value=colval;
+                                                    inputs[k].value=colval;
+                                                    
+                                                    if(colval=="G"){
+                                                        inputs[k].style.backgroundColor="#B2DFDB";
+                                                        inputs[k].style.color="#000";
+                                                    }else if(colval=="VG"){
+                                                        inputs[k].style.backgroundColor="#009688";
+                                                        inputs[k].style.color="#fff";
+                                                    }else if(colval=="U"){
+                                                        inputs[k].style.backgroundColor="#E91E63";
+                                                        inputs[k].style.color="#fff";
+                                                    }
 																								}
 																						}
 																				}else if(selects.length>0){
 																						for(var k=0;k<selects.length;k++){
 																								selects[k].value=colval;
+                                                if(colval=="number:101314"){
+                                                    selects[k].style.backgroundColor="#B2DFDB";
+                                                    selects[k].style.color="#000";
+                                                }else if(colval=="number:101313"){
+                                                    selects[k].style.backgroundColor="#009688";
+                                                    selects[k].style.color="#fff";
+                                                }else if(colval=="number:101315"){
+                                                    selects[k].style.backgroundColor="#E91E63";
+                                                    selects[k].style.color="#fff";
+                                                }
 																						}																
 																				}
-																				tabrow.style.backgroundColor="#def";
+																				//tabrow.style.backgroundColor="#def";
 																		}else{
 																				console.log("Ignoring: "+colname);
 																		}
-																}
-
+																}                                
 														}
 
 												}else{
@@ -205,4 +226,4 @@ function importcsv()
 function getup()
 {
 		document.body.innerHTML+="<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' value='Import' onclick='importcsv();'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>";
-}
+}	
