@@ -2,8 +2,9 @@
 
 Test Data csv compatible with our systems!
 
-Laborationsrapport 5,0 hp
-Personnummer,Namn,Betyg,Moment3,Moment4,Moment5
+Individuell uppgift 2,0 hp 1001
+2018-11-03
+Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 - Tracing,Deluppgift 4 - Seamless border,Deluppgift 5 - Sammanslagning
 19212112-4421,Greger Gregovic,G,J,G,G,VG,G
 19560603-3434,Sven Lundqvist,G,N,VG,G,VG,G
 19503022-4566,Conny Hill,VG,N,VG,G,U,G
@@ -66,18 +67,31 @@ function importcsv()
 						headings.push("UNK");
 						if(table.rows.length>0){
 
-								console.log(headings);
+								//console.log(headings);
 							
 								// Iterate over cells and collect headings by number
 								for(var i=0;i<table.rows[0].cells.length;i++){
+                  /*
 										var heading=table.rows[0].cells[i].innerText.trim();
 												//if(heading.length<2||heading=="Anonymiseringskod"||heading=="Titel / Alternativ titel"||heading=="Ex.datum"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
-												if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
+												//if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
+                        if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
 														console.log("Discarding: ",heading);		
 												}else{
 														headings.push(heading);
-												}
+                        }
+                        */
+                    var heading=table.rows[0].cells[i]
+                    //if(heading.length<2||heading=="Anonymiseringskod"||heading=="Titel / Alternativ titel"||heading=="Ex.datum"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
+                    //if(heading.length<2||heading=="Titel / Alternativ titel"||heading=="Status"||heading.indexOf("beslutshandling")!=-1||heading.indexOf("Skrivningspo")!=-1){
+                    if(heading.classList.contains("ng-hide")){
+                        console.log("Discarding: ",heading.innerText.trim());		
+                    }else{
+                        headings.push(heading.innerText.trim());
+                    }
+
 								}
+								console.log("Snus",headings);
 
 								// Iterate over all columns to check compatibility
 								// For now, we skip over hidden columns e.g. "Anonymiseringskod" and "Titel"
