@@ -120,7 +120,9 @@ function importcsv()
                                 var cnt=1;
                                 var colcnt=0;
                                 var cell;
+                                var isHere=false;
                                 for(var j=1;j<headings.length;j++){
+                                  	isHere=false;
                                     colname=headings[j];                                    
                                     colval=tabrows[pnr][colname];
 																		if(typeof colval !== "undefined"){		
@@ -137,27 +139,34 @@ function importcsv()
 																				var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
 																				if(inputs.length>0){
-																						for(var k=0;k<inputs.length;k++){																								
+																						for(var k=0;k<inputs.length;k++){
 																								if(colname=="Ex.datum"){
-																										inputs[k].value=examdate;
+                                                    if(isHere){
+                                                        inputs[k].value=examdate;
+                                                    }                                                    
 																								}else{
-                                                    inputs[k].value=colval;
-                                                    
-                                                    if(colval=="G"){
-                                                        inputs[k].style.backgroundColor="#B2DFDB";
-                                                        inputs[k].style.color="#000";
-                                                    }else if(colval=="VG"){
-                                                        inputs[k].style.backgroundColor="#009688";
-                                                        inputs[k].style.color="#fff";
-                                                    }else if(colval=="U"){
-                                                        inputs[k].style.backgroundColor="#E91E63";
-                                                        inputs[k].style.color="#fff";
+                                                    if(colval!=="-"){
+                                                        inputs[k].value=colval;
+
+                                                        if(colval=="G"){
+                                                            inputs[k].style.backgroundColor="#B2DFDB";
+                                                            inputs[k].style.color="#000";
+                                                        }else if(colval=="VG"){
+                                                            inputs[k].style.backgroundColor="#009688";
+                                                            inputs[k].style.color="#fff";
+                                                        }else if(colval=="U"){
+                                                            inputs[k].style.backgroundColor="#E91E63";
+                                                            inputs[k].style.color="#fff";
+                                                        }
                                                     }
 																								}
 																						}
 																				}else if(selects.length>0){
 																						for(var k=0;k<selects.length;k++){
-																								selects[k].value=colval;
+                                                selects[k].value=colval;
+                                              
+                                                if(colval.indexOf("-")==-1) isHere=true;
+                                              
                                                 if(colval=="number:101314"){
                                                     selects[k].style.backgroundColor="#B2DFDB";
                                                     selects[k].style.color="#000";
@@ -170,11 +179,10 @@ function importcsv()
                                                 }
 																						}																
 																				}
-																				//tabrow.style.backgroundColor="#def";
 																		}else{
-																				console.log("Ignoring: "+colname);
+																				//console.log("Ignoring: "+colname);
 																		}
-																}                                
+																}
 														}
 
 												}else{
