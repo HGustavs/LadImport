@@ -40,7 +40,6 @@ function importcsv()
 		var examdate= new Date();
 	
 		examdate=new Date(controw[1]);
-		console.log(examdate);
 
 		if(controw.length>1){
 				contheadings=controw[2].split(",");
@@ -121,13 +120,19 @@ function importcsv()
                                 var colcnt=0;
                                 var cell;
                                 var isHere=false;
-                                for(var j=1;j<headings.length;j++){
-                                  	isHere=false;
+                                var checkbox=null;
+                                for(var j=0;j<headings.length;j++){
+                                    cell=tabrow.cells[colcnt];
+                                    if(j==0) {
+                                        checkbox=null;
+                                        let checkboxes=cell.getElementsByTagName("input");
+                                        for(let k=0;k<checkboxes.length;k++){checkbox=checkboxes[k];}
+                                    }
+                                    isHere=false;
                                     colname=headings[j];                                    
                                     colval=tabrows[pnr][colname];
 																		if(typeof colval !== "undefined"){		
                                         colcnt++;														
-                                        cell=tabrow.cells[colcnt];
                                         
                                         // If there are hidden cells in the tabrow we skip until we get a visable cell
                                         while(cell.classList.contains("ng-hide")){colcnt++;cell=tabrow.cells[colcnt];}
@@ -143,6 +148,9 @@ function importcsv()
 																								if(colname=="Ex.datum"){
                                                     if(isHere){
                                                         inputs[k].value=examdate;
+                                                        checkbox.checked=true;
+                                                        checkbox.style.backgroundColor="#009688";
+                                                        checkbox.style.color="#fff";
                                                     }                                                    
 																								}else{
                                                     if(colval!=="-"){
@@ -215,5 +223,5 @@ function importcsv()
 
 function getup()
 {
-		document.body.innerHTML+="<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' value='Import' onclick='importcsv();'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>";
+		document.body.innerHTML+="<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;z-index:15000;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' value='Import' onclick='importcsv();'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>";
 }	
