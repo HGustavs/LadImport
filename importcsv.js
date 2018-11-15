@@ -38,11 +38,12 @@ function importcsv()
 		var students=[];
 		var results=[];
 		var examdate= new Date();
+  	var gradeScale=controw[1];
 	
-		examdate=new Date(controw[1]);
+		examdate=controw[2];  	
 
 		if(controw.length>1){
-				contheadings=controw[2].split(",");
+				contheadings=controw[3].split(",");
 				
 				// Swizzle data into an easily workable qualified array / object structure
 				for(var i=3;i<controw.length;i++){
@@ -74,7 +75,9 @@ function importcsv()
                     if(heading.innerText.trim()==""){
                         console.log("Discarding: ",heading.innerText.trim());		
                     }else{
-                        headings.push(heading.innerText.trim());
+                      	let t=heading.innerText.trim();
+                      	t=t.replace(",",".");
+                        headings.push(t);
                     }
 
 								}
@@ -120,30 +123,35 @@ function importcsv()
                                 var colcnt=0;
                                 var cell;
                                 var isHere=false;
-                                var shouldStore=false;
-                                var checkbox=null;
                                 for(var j=0;j<headings.length;j++){
-                                    shouldStore=false;
-                                    isHere=false;
+                                    cell=tabrow.cells[colcnt];
+                                    if(j==0) {
+                                        let checkboxes=cell.getElementsByTagName("input");
+                                        for(let k=0;k<checkboxes.length;k++){
+                                            checkbox=checkboxes[k];
+                                        }
+                                    }
                                     colname=headings[j];                                    
                                     colval=tabrows[pnr][colname];
-                                    cell=tabrow.cells[colcnt];
-
-                                    if(j==0) {
-                                        checkbox=null;
-                                        let checkboxes=cell.getElementsByTagName("input");
-                                        for(let k=0;k<checkboxes.length;k++){checkbox=checkboxes[k];}
-                                    }
-
 																		if(typeof colval !== "undefined"){		
                                         colcnt++;														
+                                        cell=tabrow.cells[colcnt];
                                         
                                         // If there are hidden cells in the tabrow we skip until we get a visable cell
                                         while(cell.classList.contains("ng-hide")){colcnt++;cell=tabrow.cells[colcnt];}
 
-                                        if(colname=="Betyg"&&colval=="VG") colval="number:101313";
-                                        if(colname=="Betyg"&&colval=="G") colval="number:101314";
-                                        if(colname=="Betyg"&&colval=="U") colval="number:101315";
+                                        if(colname=="Betyg"){
+                                            if(gradeScale==="U-G-VG"){
+                                                if(colval=="VG") colval="number:101313";
+                                                if(colval=="G") colval="number:101314";
+                                                if(colval=="U") colval="number:101315";  
+                                            }else if(gradeScale==="U-G"){
+                                                if(colval=="G") colval="number:2302";
+                                                if(colval=="U") colval="number:2303";      
+                                            }else{
+                                                alert("Grade scale "+gradeScale+" needs to be implemented...")
+                                            }
+                                        }
                                         
 																				var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
@@ -152,11 +160,16 @@ function importcsv()
 																								if(colname=="Ex.datum"){
                                                     if(isHere){
                                                         inputs[k].value=examdate;
+                                                      	inputs[k].dispatchEvent(new Event('change', { 'bubbles': true }));
+                                                        checkbox.checked=true;
+																												checkbox.style.backgroundColor="#009688";
+                                                        checkbox.style.color="#fff";
+                                                      	console.log(checkbox);
                                                     }                                                    
 																								}else{
                                                     if(colval!=="-"){
-                                                        shouldStore=true;
                                                         inputs[k].value=colval;
+                                                      	inputs[k].dispatchEvent(new Event('change', { 'bubbles': true }));
 
                                                         if(colval=="G"){
                                                             inputs[k].style.backgroundColor="#B2DFDB";
@@ -175,15 +188,18 @@ function importcsv()
 																						for(var k=0;k<selects.length;k++){
                                                 selects[k].value=colval;
                                               
-                                                if(colval.indexOf("-")==-1) {isHere=true;shouldStore=true;}
+                                                if(colval.indexOf("-")==-1){
+                                                  	isHere=true;
+                                                  	selects[k].dispatchEvent(new Event('change', { 'bubbles': true }));
+                                                }
                                               
-                                                if(colval=="number:101314"){
+                                                if(colval=="number:101314"||colval=="number:2302"){
                                                     selects[k].style.backgroundColor="#B2DFDB";
                                                     selects[k].style.color="#000";
                                                 }else if(colval=="number:101313"){
                                                     selects[k].style.backgroundColor="#009688";
                                                     selects[k].style.color="#fff";
-                                                }else if(colval=="number:101315"){
+                                                }else if(colval=="number:101315"||colval=="number:2303"){
                                                     selects[k].style.backgroundColor="#E91E63";
                                                     selects[k].style.color="#fff";
                                                 }
@@ -192,13 +208,7 @@ function importcsv()
 																		}else{
 																				//console.log("Ignoring: "+colname);
 																		}
-                                }
-                                if(shouldStore){
-                                  checkbox.checked=true;
-                                  checkbox.style.backgroundColor="#009688";
-                                  checkbox.style.color="#fff";
-  
-                                }
+																}
 														}
 
 												}else{
@@ -222,7 +232,11 @@ function importcsv()
 						}else{
 								alert("No applicable result rows to import data into!");
 						}
-				}				
+				}	
+      	$("ladok-spara-knapp button").each(function(){
+          	console.log(this)
+         		this.disabled=false;
+        });
 		}else{
 				alert("No applicable csv content yet!");
 		}
