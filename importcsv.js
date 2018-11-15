@@ -120,17 +120,21 @@ function importcsv()
                                 var colcnt=0;
                                 var cell;
                                 var isHere=false;
+                                var shouldStore=false;
                                 var checkbox=null;
                                 for(var j=0;j<headings.length;j++){
+                                    shouldStore=false;
+                                    isHere=false;
+                                    colname=headings[j];                                    
+                                    colval=tabrows[pnr][colname];
                                     cell=tabrow.cells[colcnt];
+
                                     if(j==0) {
                                         checkbox=null;
                                         let checkboxes=cell.getElementsByTagName("input");
                                         for(let k=0;k<checkboxes.length;k++){checkbox=checkboxes[k];}
                                     }
-                                    isHere=false;
-                                    colname=headings[j];                                    
-                                    colval=tabrows[pnr][colname];
+
 																		if(typeof colval !== "undefined"){		
                                         colcnt++;														
                                         
@@ -148,12 +152,10 @@ function importcsv()
 																								if(colname=="Ex.datum"){
                                                     if(isHere){
                                                         inputs[k].value=examdate;
-                                                        checkbox.checked=true;
-                                                        checkbox.style.backgroundColor="#009688";
-                                                        checkbox.style.color="#fff";
                                                     }                                                    
 																								}else{
                                                     if(colval!=="-"){
+                                                        shouldStore=true;
                                                         inputs[k].value=colval;
 
                                                         if(colval=="G"){
@@ -173,7 +175,7 @@ function importcsv()
 																						for(var k=0;k<selects.length;k++){
                                                 selects[k].value=colval;
                                               
-                                                if(colval.indexOf("-")==-1) isHere=true;
+                                                if(colval.indexOf("-")==-1) {isHere=true;shouldStore=true;}
                                               
                                                 if(colval=="number:101314"){
                                                     selects[k].style.backgroundColor="#B2DFDB";
@@ -190,7 +192,13 @@ function importcsv()
 																		}else{
 																				//console.log("Ignoring: "+colname);
 																		}
-																}
+                                }
+                                if(shouldStore){
+                                  checkbox.checked=true;
+                                  checkbox.style.backgroundColor="#009688";
+                                  checkbox.style.color="#fff";
+  
+                                }
 														}
 
 												}else{
