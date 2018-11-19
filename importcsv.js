@@ -92,7 +92,9 @@ function importcsv()
                     }else{
                       	let t=heading.innerText.trim();
                       	t=t.replace(",",".");
-                        headings.push(t);
+												if(t!="Anonymiseringskod"){
+														headings.push(t);
+												}
                     }
 
 								}
@@ -139,7 +141,7 @@ function importcsv()
                                 var cell;
                                 var isHere=false;
                                 for(var j=0;j<headings.length;j++){
-                                    cell=tabrow.cells[colcnt];
+                                    cell=tabrow.cells[j];
                                     if(j==0) {
                                         let checkboxes=cell.getElementsByTagName("input");
                                         for(let k=0;k<checkboxes.length;k++){
@@ -151,12 +153,6 @@ function importcsv()
 																	
 																		// typeof colval !== "undefined"
 																		if(contheadings.indexOf(colname)!=-1){		
-                                        colcnt++;														
-                                        cell=tabrow.cells[colcnt];
-                                        
-                                        // If there are hidden cells in the tabrow we skip until we get a visible cell
-                                        while(cell.classList.contains("ng-hide")){colcnt++;cell=tabrow.cells[colcnt];}
-
 																				var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
 																				if(inputs.length>0){
