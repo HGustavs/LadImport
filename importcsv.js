@@ -92,6 +92,8 @@ function importcsv()
                     }else{
                       	let t=heading.innerText.trim();
                       	t=t.replace(",",".");
+											
+												// Only push first-calls visible columns
 												if(t!="Anonymiseringskod"&&t!="Titel / Alternativ titel"&&t.indexOf("till beslutshandling")==-1){
 														headings.push(t);
 												}
@@ -150,9 +152,9 @@ function importcsv()
                                     }
                                     colname=headings[j];  																	  
                                     colval=tabrows[pnr][colname];
-																	
-																		// typeof colval !== "undefined"
-																		if(contheadings.indexOf(colname)!=-1){		
+																																			
+																		//if(contheadings.indexOf(colname)!=-1){		
+																		if(typeof colval !== "undefined"){		
 																				var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
 																				if(inputs.length>0){
