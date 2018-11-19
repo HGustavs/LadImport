@@ -53,6 +53,7 @@ function importcsv()
 		var results=[];
 		var examdate= new Date();
   	var gradeScale=controw[1];
+		var contheadings=[];
 	
 		examdate=controw[2];  	
 
@@ -147,7 +148,9 @@ function importcsv()
                                     }
                                     colname=headings[j];                                    
                                     colval=tabrows[pnr][colname];
-																		if(typeof colval !== "undefined"){		
+																	
+																		// typeof colval !== "undefined"
+																		if(contheadings.indexOf(colname)!=-1){		
                                         colcnt++;														
                                         cell=tabrow.cells[colcnt];
                                         
@@ -220,7 +223,7 @@ function importcsv()
 																						}																
 																				}
 																		}else{
-																				//console.log("Ignoring: "+colname);
+																				console.log("Ignoring: "+colname);
 																		}
 																}
 														}
