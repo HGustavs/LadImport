@@ -92,7 +92,7 @@ function importcsv()
                     }else{
                       	let t=heading.innerText.trim();
                       	t=t.replace(",",".");
-												if(t!="Anonymiseringskod"){
+												if(t!="Anonymiseringskod"&&t!="Titel / Alternativ titel"&&t.indexOf("till beslutshandling")==-1){
 														headings.push(t);
 												}
                     }
@@ -148,7 +148,7 @@ function importcsv()
                                             checkbox=checkboxes[k];
                                         }
                                     }
-                                    colname=headings[j];                                    
+                                    colname=headings[j];  																	  
                                     colval=tabrows[pnr][colname];
 																	
 																		// typeof colval !== "undefined"
