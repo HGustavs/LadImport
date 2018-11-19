@@ -1,3 +1,26 @@
+// ==UserScript==
+// @name        LadMonkey
+// @namespace   moreCowbell
+// @description Import grades like a chimp
+// @include     https://www.start.ladok.se/gui/*
+// @require     https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js
+// @version     1
+// @grant       none
+// ==/UserScript==
+
+// ------------------------------------------------------------------------------------------------------------
+// -----------------=============######## Import/Export of csv for ladok ########=============-----------------
+// ------------------------------------------------------------------------------------------------------------
+//  Copyright a97marbr / HGustavs
+//
+//        (\ /)
+//        (. .)           
+//       c(")(")  ∴ 
+//-------------------------------------------------------------------------------------------------------------
+
+// Note: In order to comply with the GPL3 License you must publish any code based on this code using the GPL3 license. No exceptions.
+// Note: For Now, we strongly advise that you manually confirm that the results have been imported correctly
+
 /* 
 
 Test Data csv compatible with our systems!
@@ -15,19 +38,10 @@ Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 
 
 */
 
-// ------------------------------------------------------------------------------------------------------------
-// -----------------=============######## Import/Export of csv for ladok ########=============-----------------
-// ------------------------------------------------------------------------------------------------------------
-//  Copyright a97marbr / HGustavs
-//
-//        (\ /)
-//        (. .)           
-//       c(")(")  ∴ 
-//-------------------------------------------------------------------------------------------------------------
-
-// Note: In order to comply with the GPL3 License you must publish any code based on this code using the GPL3 license. No exceptions.
-// Note: For Now, we strongly advise that you manually confirm that the results have been imported correctly
-
+$( document ).ready(function() {
+		$("body").append("<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
+  	$("#importbtn").click(importcsv);
+});
 
 function importcsv()
 {
@@ -137,22 +151,9 @@ function importcsv()
                                         colcnt++;														
                                         cell=tabrow.cells[colcnt];
                                         
-                                        // If there are hidden cells in the tabrow we skip until we get a visable cell
+                                        // If there are hidden cells in the tabrow we skip until we get a visible cell
                                         while(cell.classList.contains("ng-hide")){colcnt++;cell=tabrow.cells[colcnt];}
 
-                                        if(colname=="Betyg"){
-                                            if(gradeScale==="U-G-VG"){
-                                                if(colval=="VG") colval="number:101313";
-                                                if(colval=="G") colval="number:101314";
-                                                if(colval=="U") colval="number:101315";  
-                                            }else if(gradeScale==="U-G"){
-                                                if(colval=="G") colval="number:2302";
-                                                if(colval=="U") colval="number:2303";      
-                                            }else{
-                                                alert("Grade scale "+gradeScale+" needs to be implemented...")
-                                            }
-                                        }
-                                        
 																				var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
 																				if(inputs.length>0){
@@ -185,6 +186,19 @@ function importcsv()
 																								}
 																						}
 																				}else if(selects.length>0){
+																						if(colname=="Betyg"){
+																								if(gradeScale==="U-G-VG"){
+																										if(colval=="VG") colval="number:101313";
+																										if(colval=="G") colval="number:101314";
+																										if(colval=="U") colval="number:101315";  
+																								}else if(gradeScale==="U-G"){
+																										if(colval=="G") colval="number:2302";
+																										if(colval=="U") colval="number:2303";      
+																								}else{
+																										alert("Grade scale "+gradeScale+" needs to be implemented...")
+																								}
+																						}
+																					
 																						for(var k=0;k<selects.length;k++){
                                                 selects[k].value=colval;
                                               
@@ -242,8 +256,3 @@ function importcsv()
 		}
 		
 }
-
-function getup()
-{
-		document.body.innerHTML+="<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;z-index:15000;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' value='Import' onclick='importcsv();'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>";
-}	
