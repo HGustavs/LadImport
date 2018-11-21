@@ -22,10 +22,18 @@
 // Note: For Now, we strongly advise that you manually confirm that the results have been imported correctly
 
 /* 
+Input Data Format:
+
+Delkurs
+Betygssystem
+Betygsdatum
+Kolumn-rubriker (All column headings apart from Personnummer,Namn,Betyg must be manually added within LADOK)
+CSV formated results
 
 Test Data csv compatible with our systems!
-
+---- 8< -----
 Individuell uppgift 2,0 hp 1001
+U-G-VG
 2018-11-03
 Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 - Tracing,Deluppgift 4 - Seamless border,Deluppgift 5 - Sammanslagning
 19212112-4421,Greger Gregovic,G,J,G,G,VG,G
@@ -35,7 +43,7 @@ Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 
 19865324-3567,Lorf Gregovic,U,J,U,G,G,G
 20124567-3567,Ken Klum,G,J,U,-,-,G
 19235795-3585,Tommy Digman,VG,N,-,U,G,G
-
+---- 8< -----
 */
 
 $( document ).ready(function() {
