@@ -52,6 +52,35 @@ $( document ).ready(function() {
     $("#closebtn2").click(function(){document.getElementById("ladmonkeycontainer").style.display="none"});  
 });
 
+function explodecsv(instr)
+{
+		var csvarr=[];
+		var str="";
+		var quotemode=false;
+		for(var i=0;i<instr.length;i++){
+				if(quotemode){
+						if(instr[i]=='"'){
+								quotemode=false;
+						}else{
+								str+=instr[i];
+						}
+				}else{
+						if(instr[i]=='"'){
+								quotemode=true;
+						}else if(instr[i]==","){
+								csvarr.push(str);
+								str="";	
+						}else{
+								str+=instr[i];
+						}
+				}
+		}
+		if(str!=""){
+				csvarr.push(str);
+		}
+		return csvarr;
+}
+
 function importcsv()
 {
 		var thecontent=document.getElementById("thearea").value;
@@ -67,11 +96,11 @@ function importcsv()
 		examdate=controw[2];  	
 
 		if(controw.length>1){
-				contheadings=controw[3].split(",");
+				contheadings=explodecsv(controw[3]);
 				
 				// Swizzle data into an easily workable qualified array / object structure
 				for(var i=3;i<controw.length;i++){
-						var tmprow=controw[i].split(",");
+						var tmprow=explodecsv(controw[i]);
 						var tmpobj=[];
 						for(var j=0;j<tmprow.length;j++){
 							tmpobj[contheadings[j]]=tmprow[j];
