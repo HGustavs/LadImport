@@ -39,8 +39,9 @@ Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 
 */
 
 $( document ).ready(function() {
-		$("body").append("<div style='width:440px;padding:8px;height:300px;top:255px;right:20px;background-color:#fef;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;'><textarea id='thearea' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
-  	$("#importbtn").click(importcsv);
+    $("body").append("<div id='ladmonkeycontainer' style='width:440px;height:330px;top:255px;right:20px;background-color:#fef;box-shadow:4px 4px 4px #000;position:fixed;'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn2' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><textarea id='thearea' placeholder='Paste your CSV formated results here...' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
+    $("#importbtn").click(importcsv);
+    $("#closebtn2").click(function(){document.getElementById("ladmonkeycontainer").style.display="none"});  
 });
 
 function importcsv()
