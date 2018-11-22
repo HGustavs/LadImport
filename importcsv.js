@@ -52,7 +52,7 @@ $( document ).ready(function() {
     $("#closebtn2").click(function(){document.getElementById("ladmonkeycontainer").style.display="none"});  
 });
 
-function explodecsv(instr)
+function explodecsv(instr,delimiter)
 {
 		var csvarr=[];
 		var str="";
@@ -67,7 +67,7 @@ function explodecsv(instr)
 				}else{
 						if(instr[i]=='"'){
 								quotemode=true;
-						}else if(instr[i]==","){
+						}else if(instr[i]==delimiter){
 								csvarr.push(str);
 								str="";	
 						}else{
@@ -81,6 +81,18 @@ function explodecsv(instr)
 		return csvarr;
 }
 
+function ganderdelimiter(instr)
+{
+		var nocoma=0;
+		var nosemi=0;
+		for(var i=0;i<instr.length;i++){
+				if(instr[i]==",") nocoma++;
+				if(instr[i]==";") nosemi++;			
+		}
+		if(nosemi>nocoma) return ";"
+		else return ","
+}
+
 function importcsv()
 {
 		var thecontent=document.getElementById("thearea").value;
@@ -92,15 +104,17 @@ function importcsv()
 		var examdate= new Date();
   	var gradeScale=controw[1];
 		var contheadings=[];
+		var delimiter=",";
 	
 		examdate=controw[2];  	
 
 		if(controw.length>1){
-				contheadings=explodecsv(controw[3]);
+				delimiter=ganderdelimiter(controw[3])
+				contheadings=explodecsv(controw[3],delimiter);
 				
 				// Swizzle data into an easily workable qualified array / object structure
 				for(var i=3;i<controw.length;i++){
-						var tmprow=explodecsv(controw[i]);
+						var tmprow=explodecsv(controw[i],delimiter);
 						var tmpobj=[];
 						for(var j=0;j<tmprow.length;j++){
 							tmpobj[contheadings[j]]=tmprow[j];
