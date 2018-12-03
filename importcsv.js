@@ -183,7 +183,7 @@ function importcsv()
 												//if(headings.length+4==tabrow.cells.length){
 												if(1){
 														// Now we process each row / after trimming the excess characters
-														var pnr=tabrow.cells[1].innerText.trim();
+                            var pnr=tabrow.cells[1].innerText.trim().substring(0,13);                            
 														students.push(pnr);
 														
 														if(typeof tabrows[pnr] === "undefined"){
