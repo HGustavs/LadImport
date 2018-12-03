@@ -47,149 +47,158 @@ Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 
 */
 
 $( document ).ready(function() {
-    $("body").append("<div id='ladmonkeycontainer' style='width:440px;height:330px;top:255px;right:20px;background-color:#fef;box-shadow:4px 4px 4px #000;position:fixed;'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn2' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><textarea id='thearea' placeholder='Paste your CSV formated results here...' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
-    $("#importbtn").click(importcsv);
-    $("#closebtn2").click(function(){document.getElementById("ladmonkeycontainer").style.display="none"});  
+  $("body").append("<div id='ladmonkeycontainer' style='width:440px;height:330px;top:255px;right:20px;background-color:#fef;box-shadow:4px 4px 4px #000;position:fixed;'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn2' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><textarea id='thearea' placeholder='Paste your CSV formated results here...' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
+  $("#importbtn").click(importcsv);
+  $("#closebtn2").click(function(){document.getElementById("ladmonkeycontainer").style.display="none"});  
 });
 
 function explodecsv(instr,delimiter)
 {
-		var csvarr=[];
-		var str="";
-		var quotemode=false;
-		for(var i=0;i<instr.length;i++){
-				if(quotemode){
-						if(instr[i]=='"'){
-								quotemode=false;
-						}else{
-								str+=instr[i];
-						}
-				}else{
-						if(instr[i]=='"'){
-								quotemode=true;
-						}else if(instr[i]==delimiter){
-								csvarr.push(str);
-								str="";	
-						}else{
-								str+=instr[i];
-						}
-				}
-		}
-		if(str!=""){
-				csvarr.push(str);
-		}
-		return csvarr;
+  var csvarr=[];
+  var str="";
+  var quotemode=false;
+  for(var i=0;i<instr.length;i++){
+      if(quotemode){
+          if(instr[i]=='"'){
+              quotemode=false;
+          }else{
+              str+=instr[i];
+          }
+      }else{
+          if(instr[i]=='"'){
+              quotemode=true;
+          }else if(instr[i]==delimiter){
+              csvarr.push(str);
+              str="";	
+          }else{
+              str+=instr[i];
+          }
+      }
+  }
+  if(str!=""){
+      csvarr.push(str);
+  }
+  return csvarr;
 }
 
 function ganderdelimiter(instr)
 {
-		var nocoma=0;
-		var nosemi=0;
-		for(var i=0;i<instr.length;i++){
-				if(instr[i]==",") nocoma++;
-				if(instr[i]==";") nosemi++;			
-		}
-		if(nosemi>nocoma) return ";"
-		else return ","
+  var nocoma=0;
+  var nosemi=0;
+  for(var i=0;i<instr.length;i++){
+      if(instr[i]==",") nocoma++;
+      if(instr[i]==";") nosemi++;			
+  }
+  if(nosemi>nocoma) return ";"
+  else return ","
 }
 
 function importcsv()
 {
-		var thecontent=document.getElementById("thearea").value;
-		var controw=thecontent.split("\n");
-		var tabrows=[];
-		var tabheadings;
-		var students=[];
-		var results=[];
-		var examdate= new Date();
-  	var gradeScale=controw[1];
-		var contheadings=[];
-		var delimiter=",";
-	
-		examdate=controw[2];  	
+  var thecontent=document.getElementById("thearea").value;
+  var controw=thecontent.split("\n");
+  var tabrows=[];
+  var tabheadings;
+  var students=[];
+  var results=[];
+  var examdate= new Date();
+  var importcoursemodule="UNK"
+  var ladokcoursemodule="UNK";
+  var gradeScale=controw[1];
+  var contheadings=[];
+  var delimiter=",";
 
-		if(controw.length>1){
-				delimiter=ganderdelimiter(controw[3])
-				contheadings=explodecsv(controw[3],delimiter);
-				
-				// Swizzle data into an easily workable qualified array / object structure
-				for(var i=3;i<controw.length;i++){
-						var tmprow=explodecsv(controw[i],delimiter);
-						var tmpobj=[];
-						for(var j=0;j<tmprow.length;j++){
-							tmpobj[contheadings[j]]=tmprow[j];
-						}
-						tmpobj["Ex.datum"]=examdate;
-						if(tmpobj['Personnummer']!=""){
-								tabrows[tmpobj['Personnummer']]=tmpobj;
-								results.push(tmpobj['Personnummer']);
-						}
-				}
-			
-				// Retrieve on-screen table!
-				var alltables=document.getElementsByClassName("resultatrapportering");
-				if(alltables.length>0){
-						var table = alltables[0];
-						var headings=[];
-						headings.push("UNK");
-						if(table.rows.length>0){
+  importcoursemodule=controw[0];
+  $("underlag-rubrik span").each(function(){ladokcoursemodule=this.innerHTML});  	  	
+  if(ladokcoursemodule.indexOf(importcoursemodule)===-1||importcoursemodule===""){
+      alert("You are trying to import grades for: "+importcoursemodule+" but this is the result area for: "+ladokcoursemodule);
+  }else{       
 
-								//console.log(headings);
-							
-								// Iterate over cells and collect headings by number
-								for(var i=0;i<table.rows[0].cells.length;i++){
+    examdate=controw[2];  	
+
+    if(controw.length>1){
+        delimiter=ganderdelimiter(controw[3])
+        contheadings=explodecsv(controw[3],delimiter);
+
+        // Swizzle data into an easily workable qualified array / object structure
+        for(var i=3;i<controw.length;i++){
+            var tmprow=explodecsv(controw[i],delimiter);
+            var tmpobj=[];
+            for(var j=0;j<tmprow.length;j++){
+              tmpobj[contheadings[j]]=tmprow[j];
+            }
+            tmpobj["Ex.datum"]=examdate;
+            if(tmpobj['Personnummer']!=""){
+                tabrows[tmpobj['Personnummer']]=tmpobj;
+                results.push(tmpobj['Personnummer']);
+            }
+        }
+
+        // Retrieve on-screen table!
+        var alltables=document.getElementsByClassName("resultatrapportering");
+        if(alltables.length>0){
+            var table = alltables[0];
+            var headings=[];
+            headings.push("UNK");
+            if(table.rows.length>0){
+
+                //console.log(headings);
+
+                // Iterate over cells and collect headings by number
+                for(var i=0;i<table.rows[0].cells.length;i++){
                     var heading=table.rows[0].cells[i]
                     if(heading.innerText.trim()==""){
                         console.log("Discarding: ",heading.innerText.trim());		
                     }else{
-                      	let t=heading.innerText.trim();
-                      	t=t.replace(",",".");
-											
-												// Only push first-calls visible columns
-												if(t!="Anonymiseringskod"&&t!="Titel / Alternativ titel"&&t.indexOf("till beslutshandling")==-1){
-														headings.push(t);
-												}
+                        let t=heading.innerText.trim();
+                        t=t.replace(",",".");
+
+                        // Only push first-calls visible columns
+                        if(t!="Anonymiseringskod"&&t!="Titel / Alternativ titel"&&t.indexOf("till beslutshandling")==-1){
+                            headings.push(t);
+                        }
                     }
 
-								}
+                }
 
-								// Iterate over all columns to check compatibility
+                // Iterate over all columns to check compatibility
                 // For now, we skip over hidden columns e.g. "Anonymiseringskod" and "Titel"
                 /*
-								var compatibility=true;
-								var reason="";
-								for(var i=0;i<headings.length;i++){
-										if(headings[i].length<2||headings[i]=="Titel / Alternativ titel"||headings[i]=="Ex.datum"||headings[i]=="Status"||headings[i].indexOf("beslutshandling")!=-1||headings[i].indexOf("Skrivningspo")!=-1){
-												// console.log("Discarded: "+headings[i]);
-										}else if(contheadings.indexOf(headings[i])==-1){
-												compatibility=false;
-												reason+="#"+headings[i]+"# ";
-										}
+                var compatibility=true;
+                var reason="";
+                for(var i=0;i<headings.length;i++){
+                    if(headings[i].length<2||headings[i]=="Titel / Alternativ titel"||headings[i]=="Ex.datum"||headings[i]=="Status"||headings[i].indexOf("beslutshandling")!=-1||headings[i].indexOf("Skrivningspo")!=-1){
+                        // console.log("Discarded: "+headings[i]);
+                    }else if(contheadings.indexOf(headings[i])==-1){
+                        compatibility=false;
+                        reason+="#"+headings[i]+"# ";
+                    }
                 }                
                 */
-								compatibility=true;
+                compatibility=true;
 
-								// If table is compatible then carry on
-								if(compatibility==true){
-										// List of students that do not appear in imported data
-										var notappear="";
-										var studappear="";
+                // If table is compatible then carry on
+                if(compatibility==true){
+                    // List of students that do not appear in imported data
+                    var notappear="";
+                    var studappear="";
 
-										// Perform update for each table row			
-										for (var i = 1; i<table.rows.length; i++) {
-												var tabrow=table.rows[i];
-												// Check that number of columns corresponds to number of headings
-												// For now we assume 3 unused columns?
-												//if(headings.length+4==tabrow.cells.length){
-												if(1){
-														// Now we process each row / after trimming the excess characters
-                            var pnr=tabrow.cells[1].innerText.trim().substring(0,13);                            
-														students.push(pnr);
-														
-														if(typeof tabrows[pnr] === "undefined"){
-																notappear+=pnr+"\n";
-														}else{
-																// Process each cell accordingly, knowing that student does exist
+                    // Perform update for each table row			
+                    for (var i = 1; i<table.rows.length; i++) {
+                        var tabrow=table.rows[i];
+                        // Check that number of columns corresponds to number of headings
+                        // For now we assume 3 unused columns?
+                        //if(headings.length+4==tabrow.cells.length){
+                        if(1){
+                            // Now we process each row / after trimming the excess characters
+                            //var pnr=tabrow.cells[1].innerText.trim();
+                            var pnr=tabrow.cells[1].innerText.trim().substring(0,13);                                                      	
+                            students.push(pnr);
+
+                            if(typeof tabrows[pnr] === "undefined"){
+                                notappear+=pnr+"\n";
+                            }else{
+                                // Process each cell accordingly, knowing that student does exist
                                 var cnt=1;
                                 var colcnt=0;
                                 var cell;
@@ -202,28 +211,32 @@ function importcsv()
                                             checkbox=checkboxes[k];
                                         }
                                     }
-                                    colname=headings[j];  																	  
-                                    colval=tabrows[pnr][colname];
-																																			
-																		//if(contheadings.indexOf(colname)!=-1){		
-																		if(typeof colval !== "undefined"){		
-																				var inputs=cell.getElementsByTagName("input");
+                                    colname=headings[j];
+                                    if(colname=="Betyg"){
+                                      colval=tabrows[pnr][importcoursemodule];
+                                      colname="Betyg";
+                                    }else{
+                                      colval=tabrows[pnr][colname];
+                                    }                                    
+
+                                    if(typeof colval !== "undefined"){		
+                                        var inputs=cell.getElementsByTagName("input");
                                         var selects=cell.getElementsByTagName("select");
-																				if(inputs.length>0){
-																						for(var k=0;k<inputs.length;k++){
-																								if(colname=="Ex.datum"){
+
+                                        if(inputs.length>0){
+                                            for(var k=0;k<inputs.length;k++){
+                                                if(colname=="Ex.datum"){
                                                     if(isHere){
                                                         inputs[k].value=examdate;
-                                                      	inputs[k].dispatchEvent(new Event('change', { 'bubbles': true }));
+                                                        inputs[k].dispatchEvent(new Event('change', { 'bubbles': true }));
                                                         checkbox.checked=true;
-																												checkbox.style.backgroundColor="#009688";
+                                                        checkbox.style.backgroundColor="#009688";
                                                         checkbox.style.color="#fff";
-                                                      	console.log(checkbox);
                                                     }                                                    
-																								}else{
+                                                }else{
                                                     if(colval!=="-"){
                                                         inputs[k].value=colval;
-                                                      	inputs[k].dispatchEvent(new Event('change', { 'bubbles': true }));
+                                                        inputs[k].dispatchEvent(new Event('change', { 'bubbles': true }));
 
                                                         if(colval=="G"){
                                                             inputs[k].style.backgroundColor="#B2DFDB";
@@ -236,30 +249,30 @@ function importcsv()
                                                             inputs[k].style.color="#fff";
                                                         }
                                                     }
-																								}
-																						}
-																				}else if(selects.length>0){
-																						if(colname=="Betyg"){
-																								if(gradeScale==="U-G-VG"){
-																										if(colval=="VG") colval="number:101313";
-																										if(colval=="G") colval="number:101314";
-																										if(colval=="U") colval="number:101315";  
-																								}else if(gradeScale==="U-G"){
-																										if(colval=="G") colval="number:2302";
-																										if(colval=="U") colval="number:2303";      
-																								}else{
-																										alert("Grade scale "+gradeScale+" needs to be implemented...")
-																								}
-																						}
-																					
-																						for(var k=0;k<selects.length;k++){
-                                                selects[k].value=colval;
-                                              
-                                                if(colval.indexOf("-")==-1){
-                                                  	isHere=true;
-                                                  	selects[k].dispatchEvent(new Event('change', { 'bubbles': true }));
                                                 }
-                                              
+                                            }
+                                        }else if(selects.length>0){
+                                            if(colname=="Betyg"){
+                                                if(gradeScale==="U-G-VG"){
+                                                    if(colval=="VG") colval="number:101313";
+                                                    if(colval=="G") colval="number:101314";
+                                                    if(colval=="U") colval="number:101315";  
+                                                }else if(gradeScale==="U-G"){
+                                                    if(colval=="G") colval="number:2302";
+                                                    if(colval=="U") colval="number:2303";      
+                                                }else{
+                                                    alert("Grade scale "+gradeScale+" needs to be implemented...")
+                                                }
+                                            }
+
+                                            for(var k=0;k<selects.length;k++){
+                                                selects[k].value=colval;
+
+                                                if(colval.indexOf("-")==-1){
+                                                    isHere=true;
+                                                    selects[k].dispatchEvent(new Event('change', { 'bubbles': true }));
+                                                }
+
                                                 if(colval=="number:101314"||colval=="number:2302"){
                                                     selects[k].style.backgroundColor="#B2DFDB";
                                                     selects[k].style.color="#000";
@@ -270,42 +283,42 @@ function importcsv()
                                                     selects[k].style.backgroundColor="#E91E63";
                                                     selects[k].style.color="#fff";
                                                 }
-																						}																
-																				}
-																		}else{
-																				console.log("Ignoring: "+colname);
-																		}
-																}
-														}
+                                            }																
+                                        }
+                                    }else{
+                                        //console.log("Ignoring: "+colname);
+                                    }
+                                }
+                            }
 
-												}else{
-														alert("On-screen table is broken since it has "+tabrow.cells.length+" columns but "+headings.length+" headings");
-														break;
-												}
-										}
+                        }else{
+                            alert("On-screen table is broken since it has "+tabrow.cells.length+" columns but "+headings.length+" headings");
+                            break;
+                        }
+                    }
 
-										// Do any students in result list not appear in students?
-										for(var i=0;i<results.length;i++){
-												if(students.indexOf(results[i])==-1) studappear+=results[i]+"\n"
-										}
+                    // Do any students in result list not appear in students?
+                    for(var i=0;i<results.length;i++){
+                        if(students.indexOf(results[i])==-1) studappear+=results[i]+"\n"
+                    }
 
-										// We check if any students in student list do not appear in result list
-										if(notappear!=""||studappear!=""){
-												alert("The following students did not appear in imported data:\n"+notappear+"\nThe following students did not appear in the results table:\n"+studappear);
-										}
-								}else{
-										alert("Table is not compatible since following columns are missing:\n"+reason);
-								}
-						}else{
-								alert("No applicable result rows to import data into!");
-						}
-				}	
-      	$("ladok-spara-knapp button").each(function(){
-          	console.log(this)
-         		this.disabled=false;
+                    // We check if any students in student list do not appear in result list
+                    if(notappear!=""||studappear!=""){
+                        alert("The following students did not appear in imported data:\n"+notappear+"\nThe following students did not appear in the results table:\n"+studappear);
+                    }
+                }else{
+                    alert("Table is not compatible since following columns are missing:\n"+reason);
+                }
+            }else{
+                alert("No applicable result rows to import data into!");
+            }
+        }	
+        $("ladok-spara-knapp button").each(function(){
+            this.disabled=false;
         });
-		}else{
-				alert("No applicable csv content yet!");
-		}
-		
+    }else{
+        alert("No applicable csv content yet!");
+    }
+
+}
 }
