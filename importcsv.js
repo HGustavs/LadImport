@@ -47,9 +47,39 @@ Personnummer,Namn,Betyg,Deluppgift 1 - Ikon,Deluppgift 2 - Logotyp,Deluppgift 3 
 */
 
 $( document ).ready(function() {
-  $("body").append("<div id='ladmonkeycontainer' style='width:440px;height:330px;top:255px;right:20px;background-color:#fef;box-shadow:4px 4px 4px #000;position:fixed;'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn2' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><textarea id='thearea' placeholder='Paste your CSV formated results here...' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
+  $("body").append("<div id='ladmonkeycontainer' style='width:440px;height:330px;top:255px;right:20px;background-color:#fef;box-shadow:4px 4px 4px #000;position:fixed;z-index:1000;'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn2' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><textarea id='thearea' placeholder='Paste your CSV formated results here...' style='width:390px;height:200px;'></textarea><input type='button' id='importbtn' value='Import'><input type='button' id='stylebtn' value='Style'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.</div>");  
   $("#importbtn").click(importcsv);
   $("#closebtn2").click(function(){document.getElementById("ladmonkeycontainer").style.display="none"});  
+  $("#stylebtn").click(styleResult);  
+  
+  // Wait for resultatrapportering and then style accordingly
+  var targetNode = document.body;
+
+  // Options for the observer (which mutations to observe)
+  var config = { attributes: false, childList: true, subtree: true };
+
+  // Callback function to execute when mutations are observed
+  var callback = function(mutationsList, observer) {
+    for(var mutation of mutationsList) {
+      if (mutation.type == 'childList') {
+        //console.log('A child node has been added or removed. ',mutation.target.nodeName);
+        if(mutation.target.nodeName=="TBODY"){
+          var elt = mutation.target.closest("table"); 
+          if (elt.className.indexOf("resultatrapportering")!==-1){
+          		styleResult();
+          		//observer.disconnect();
+          }
+        }
+      }
+    }
+  };
+
+  // Create an observer instance linked to the callback function
+  var observer = new MutationObserver(callback);
+
+  // Start observing the target node for configured mutations
+  observer.observe(targetNode, config);
+
 });
 
 function explodecsv(instr,delimiter)
@@ -91,6 +121,22 @@ function ganderdelimiter(instr)
   }
   if(nosemi>nocoma) return ";"
   else return ","
+}
+
+function styleResult(){
+ 	$(".kolumn-notering input").each(function(){      
+    let colval=this.value;
+    if(colval=="G"){
+      this.style.backgroundColor="#B2DFDB";
+      this.style.color="#000";
+    }else if(colval=="VG"){
+      this.style.backgroundColor="#009688";
+      this.style.color="#fff";
+    }else if(colval=="U"){
+      this.style.backgroundColor="#E91E63";
+      this.style.color="#fff";
+    }
+  })
 }
 
 function importcsv()
@@ -151,7 +197,6 @@ function importcsv()
                         console.log("Discarding: ",heading.innerText.trim());		
                     }else{
                         let t=heading.innerText.trim();
-                        t=t.replace(",",".");
 
                         // Only push first-calls visible columns
                         if(t!="Anonymiseringskod"&&t!="Titel / Alternativ titel"&&t.indexOf("till beslutshandling")==-1){
@@ -162,10 +207,23 @@ function importcsv()
                 }
 
                 // Iterate over all columns to check compatibility
-                // For now, we skip over hidden columns e.g. "Anonymiseringskod" and "Titel"
-                /*
                 var compatibility=true;
                 var reason="";
+              	console.log(headings);
+              	console.log(contheadings)
+                for(let i=0;i<contheadings.length;i++){
+                  	let importheading=contheadings[i];
+                  	if(headings.indexOf(importheading)===-1){
+                      	if(importheading!==importcoursemodule){
+                            compatibility=false;
+                            reason+="Column '"+importheading+"' not found!\n";                           
+                        }
+                    }
+                }                
+              	if(!compatibility){
+                 		alert("Import not possible due to compatibility!\n\n"); 
+                }
+                /*
                 for(var i=0;i<headings.length;i++){
                     if(headings[i].length<2||headings[i]=="Titel / Alternativ titel"||headings[i]=="Ex.datum"||headings[i]=="Status"||headings[i].indexOf("beslutshandling")!=-1||headings[i].indexOf("Skrivningspo")!=-1){
                         // console.log("Discarded: "+headings[i]);
@@ -175,8 +233,7 @@ function importcsv()
                     }
                 }                
                 */
-                compatibility=true;
-
+              	
                 // If table is compatible then carry on
                 if(compatibility==true){
                     // List of students that do not appear in imported data
