@@ -115,11 +115,14 @@ function ganderdelimiter(instr)
 {
   var nocoma=0;
   var nosemi=0;
+  var notab=0;
   for(var i=0;i<instr.length;i++){
       if(instr[i]==",") nocoma++;
       if(instr[i]==";") nosemi++;			
+    	if(instr[i]=="\t") notab++;			
   }
-  if(nosemi>nocoma) return ";"
+  if(nosemi>nocoma&&nosemi>notab) return ";"
+  else if(notab>nosemi&&notab>nocoma) return "\t"
   else return ","
 }
 
@@ -150,10 +153,11 @@ function importcsv()
   var examdate= new Date();
   var importcoursemodule="UNK"
   var ladokcoursemodule="UNK";
-  var gradeScale=controw[1];
+  var gradeScale="UNK";
   var contheadings=[];
   var delimiter=",";
 
+  /*
   importcoursemodule=controw[0];
   $("underlag-rubrik span").each(function(){ladokcoursemodule=this.innerHTML});  	  	
   if(ladokcoursemodule.indexOf(importcoursemodule)===-1||importcoursemodule===""){
@@ -161,9 +165,17 @@ function importcsv()
   }else{       
 
     examdate=controw[2];  	
-
-    if(controw.length>1){
+*/
+    if(controw.length>3){
         delimiter=ganderdelimiter(controw[3])
+      	// Get the import setup (delkurs, exam date, grade scale)
+      	importcoursemodule=explodecsv(controw[0],delimiter)[0];
+      	gradeScale=explodecsv(controw[1],delimiter)[0];
+      	examdate=explodecsv(controw[2],delimiter)[0];
+        $("underlag-rubrik span").each(function(){ladokcoursemodule=this.innerHTML});  	  	
+        if(ladokcoursemodule.indexOf(importcoursemodule)===-1||importcoursemodule===""){
+            alert("You are trying to import grades for: "+importcoursemodule+" but this is the result area for: "+ladokcoursemodule);
+        }      
         contheadings=explodecsv(controw[3],delimiter);
 
         // Swizzle data into an easily workable qualified array / object structure
@@ -377,5 +389,5 @@ function importcsv()
         alert("No applicable csv content yet!");
     }
 
-}
+//}
 }
