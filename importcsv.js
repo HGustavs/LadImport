@@ -117,7 +117,7 @@ $( document ).ready(function() {
         str+="</div>";
         str+="<div style='padding:8px;'>";
         str+="<textarea id='thearea' placeholder='Paste your CSV formated results here...' style='width:100%;height:200px;resize:none;'></textarea>";
-        str+="<input type='button' id='importbtn' value='Import'><input type='button' id='stylebtn' value='Style'><br><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.";
+        str+="<div style='text-align:right;'><input type='button' id='importbtn' value='Import'></div><br>If you use <a href='https://github.com/HGustavs/LadImport'>LadImport</a> please spread the word and star on gitHub</a><br>Check gitHub regularly for updates.";
         str+="</div>";
     str+="</div></div>";
     $("body").append(str);   
